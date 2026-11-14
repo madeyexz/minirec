@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hotKey: HotKey?
     private var recordItem: NSMenuItem!
     private var usesCmdShift5: Bool?
+    private var iconVisible = true
     private let updater = Updater()
     private var overlay: SelectionOverlay?
     private var recorder: Recorder?
@@ -37,9 +38,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.imagePosition = .imageLeading
         showIdle()
 
-        applyShortcut()
+        applySettings()
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) {
-            [weak self] _ in self?.applyShortcut()
+            [weak self] _ in self?.applySettings()
         }
 
         updater.onReady = { [weak self] in if self?.state == .idle { self?.updater.installPending() } }
@@ -119,8 +120,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 if settings.format == .frames {
                     files = try await FrameExporter.export(video: video, interval: settings.frameInterval)
                 }
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.writeObjects(files as [NSURL])
+                if settings.destination == .clipboard {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.writeObjects(files as [NSURL])
+                }
                 NSSound(named: "Pop")?.play()
             } catch {
                 Self.alert(error)
@@ -145,6 +148,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.title = ""
         statusItem.button?.contentTintColor = nil
         if updater.pending != nil { updater.installPending() }
+    }
+
+    private func applySettings() {
+        // Setting isVisible writes to UserDefaults, which calls this again before isVisible changes,
+        // so compare with the value set last.
+        let visible = !Settings.load().hideMenuBarIcon
+        if visible != iconVisible {
+            iconVisible = visible
+            statusItem.isVisible = visible
+        }
+        applyShortcut()
+    }
+
+    /// With the menu bar icon hidden, opening MiniRec again (from Finder or Spotlight) shows Settings.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        openSettings()
+        return false
     }
 
     /// ⇧⌘7 by default. With "Record with ⇧⌘5" on, MiniRec turns off the macOS ⇧⌘5

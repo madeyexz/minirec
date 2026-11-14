@@ -6,12 +6,16 @@ Press **⇧⌘7**, drag an area, press **Return** (or click Record). Press the s
 or click the red menu-bar icon, to stop. The file is copied to the clipboard, so you can
 paste it into an agent, Slack, or Finder. Files are saved in `~/Movies/MiniRec`.
 
-Settings (menu-bar icon › Settings…):
+Settings (menu-bar icon › Settings…, or open MiniRec again while it runs):
 
 - **Record with ⇧⌘5**: turns off the macOS screenshot toolbar shortcut and uses ⇧⌘5
   instead of ⇧⌘7. Turn it off to give ⇧⌘5 back to macOS.
 - **Export**: MP4 video, or image frames (JPEG, one every 0.5/1/2 s; frames that did not
   change are skipped). With frames, all the frame files are copied to the clipboard.
+- **Save to**: Clipboard (saved in `~/Movies/MiniRec` and copied), or Folder (saved in a
+  folder you choose; the clipboard is not changed).
+- **Launch at login** and **Hide menu bar icon**. With the icon hidden, the shortcut still
+  records and stops, and opening MiniRec again shows Settings.
 - **Resolution**: Standard (1×, smaller) or Retina.
 - **Frame rate**: 15, 30, or 60 fps.
 - **Show cursor**, **Record system sound**, and **Microphone** (None or a device). When
