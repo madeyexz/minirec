@@ -2,9 +2,7 @@ import AppKit
 import Security
 
 /// Installs new versions from GitHub Releases. A release has the tag "vX.Y.Z" and the
-/// asset "MiniRec.zip". The new app must meet the running app's designated requirement,
-/// so only builds signed with the same certificate install, and macOS keeps the
-/// Screen Recording permission.
+/// asset "MiniRec.zip". Only builds that the same Apple developer team signed install.
 final class Updater {
     static let repo = "madeyexz/minirec"
 
@@ -50,6 +48,7 @@ final class Updater {
         do {
             let current = Bundle.main.bundleURL
             _ = try FileManager.default.replaceItemAt(current, withItemAt: app)
+            try? FileManager.default.removeItem(at: app.deletingLastPathComponent())
             let relaunch = Process()
             relaunch.executableURL = URL(fileURLWithPath: "/bin/sh")
             relaunch.arguments = ["-c", "sleep 1; /usr/bin/open \"$0\"", current.path]
@@ -86,18 +85,27 @@ final class Updater {
 
         let app = folder.appendingPathComponent("MiniRec.app")
         guard Self.isSignedLikeThisApp(app) else {
+            try? FileManager.default.removeItem(at: folder)
             throw NSError(domain: "MiniRec", code: 3, userInfo: [NSLocalizedDescriptionKey:
-                "MiniRec \(version) is not signed with the same certificate as this copy."])
+                "MiniRec \(version) is not signed by the same developer as this copy."])
         }
         return app
     }
 
+    /// An Apple-issued certificate of the same team (Apple Development or Developer ID).
+    /// A copy without a team, such as a test build, needs its own designated requirement.
     private static func isSignedLikeThisApp(_ app: URL) -> Bool {
-        var me: SecStaticCode?, requirement: SecRequirement?, candidate: SecStaticCode?
+        var me: SecStaticCode?, info: CFDictionary?, requirement: SecRequirement?, candidate: SecStaticCode?
         guard SecStaticCodeCreateWithPath(Bundle.main.bundleURL as CFURL, [], &me) == errSecSuccess, let me,
-              SecCodeCopyDesignatedRequirement(me, [], &requirement) == errSecSuccess,
+              SecCodeCopySigningInformation(me, SecCSFlags(rawValue: kSecCSSigningInformation), &info) == errSecSuccess,
               SecStaticCodeCreateWithPath(app as CFURL, [], &candidate) == errSecSuccess, let candidate
         else { return false }
+        if let team = (info as? [String: Any])?[kSecCodeInfoTeamIdentifier as String] as? String {
+            let text = "identifier \"com.ianhsiao.minirec\" and anchor apple generic and certificate leaf[subject.OU] = \"\(team)\""
+            guard SecRequirementCreateWithString(text as CFString, [], &requirement) == errSecSuccess else { return false }
+        } else {
+            guard SecCodeCopyDesignatedRequirement(me, [], &requirement) == errSecSuccess else { return false }
+        }
         return SecStaticCodeCheckValidity(candidate, SecCSFlags(rawValue: kSecCSStrictValidate), requirement) == errSecSuccess
     }
 

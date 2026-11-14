@@ -13,6 +13,12 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/MiniRec"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
-codesign --force --sign "${SIGN_IDENTITY:--}" "$APP"
+if [ -n "${SIGN_IDENTITY:-}" ]; then
+  # Hardened runtime and a secure timestamp, which notarization needs.
+  codesign --force --options runtime --timestamp --entitlements Resources/MiniRec.entitlements \
+    --sign "$SIGN_IDENTITY" "$APP"
+else
+  codesign --force --sign - "$APP"
+fi
 
 echo "Built $APP"

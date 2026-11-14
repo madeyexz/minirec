@@ -117,7 +117,7 @@ Everything stays on your Mac. No account, no analytics, no uploads. The only net
 
 **macOS asks for Screen Recording permission again.** This happens when the app's signature changes, for example when you build it yourself without a signing certificate. Allow it once more.
 
-**How do I update?** MiniRec updates itself when it is not recording. To check now, click the menu bar icon → **Check for Updates…**. It installs only a build signed with the same certificate as your copy.
+**How do I update?** MiniRec updates itself when it is not recording. To check now, click the menu bar icon → **Check for Updates…**. It installs only a build that the same Apple developer team signed.
 
 **How do I remove it?** Quit MiniRec from its menu, then move `/Applications/MiniRec.app` to the Trash. If you turned on **Record with ⇧⌘5**, turn it off first so macOS gets the shortcut back.
 
@@ -149,10 +149,12 @@ Without `SIGN_IDENTITY` the build is signed ad hoc: macOS asks for permission ag
 **Release:**
 
 ```sh
-SIGN_IDENTITY="Apple Development: Your Name (ID)" ./scripts/release.sh 0.4.0
+SIGN_IDENTITY="Developer ID Application: Your Name (TEAM)" NOTARY_PROFILE=minirec ./scripts/release.sh 0.4.0
 ```
 
-The updater reads the latest release, takes the version from the `vX.Y.Z` tag, downloads the asset `MiniRec.zip`, and installs it only if it meets the running app's designated requirement. Sign every release with the same certificate.
+`NOTARY_PROFILE` is a keychain profile from `xcrun notarytool store-credentials`. With it, the release is notarized and stapled, so macOS opens it without a warning. Builds with a signing identity use the hardened runtime.
+
+The updater reads the latest release, takes the version from the `vX.Y.Z` tag, downloads the asset `MiniRec.zip`, and installs it only if an Apple certificate of the same team signed it (Apple Development or Developer ID).
 
 ## License
 
