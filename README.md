@@ -49,10 +49,7 @@ MiniRec does one thing. **⇧⌘7, drag, Return, ⇧⌘7** — and the file is o
 
 1. **Download** [`MiniRec.zip`](https://github.com/madeyexz/minirec/releases/latest/download/MiniRec.zip) and double-click it to unzip.
 2. **Drag `MiniRec`** into your **Applications** folder. It must be there to update itself.
-3. **Open it.** MiniRec is not from the App Store, so macOS warns you the first time:
-   - Click **Done** on the warning.
-   - Open **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to MiniRec.
-   - Confirm with **Open**. You do this only once.
+3. **Open it.** Apple notarized it, so macOS opens it after one confirmation.
 4. **Record once.** Press <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>7</kbd>. macOS asks for **Screen & System Audio Recording** permission. Allow it, then open MiniRec again.
 
 If you choose a microphone in Settings, macOS also asks for Microphone permission.
@@ -133,8 +130,8 @@ Sources/MiniRec/FrameExporter.swift     MP4 → JPEG frames, skips frames that d
 Sources/MiniRec/Settings.swift          settings stored in UserDefaults, SwiftUI Settings window
 Sources/MiniRec/Shortcut.swift          global hot key, macOS ⇧⌘5 on/off
 Sources/MiniRec/Updater.swift           GitHub Releases updater with a signature check
-scripts/build-app.sh                    builds and signs build/MiniRec.app
-scripts/release.sh                      sets the version, builds, tags, and publishes a release
+scripts/build-app.sh                    builds, signs, and notarizes build/MiniRec.app and MiniRec.zip
+.github/workflows/release.yml           builds and publishes a release when a vX.Y.Z tag is pushed
 ```
 
 **Build** (needs Xcode Command Line Tools):
@@ -149,10 +146,10 @@ Without `SIGN_IDENTITY` the build is signed ad hoc: macOS asks for permission ag
 **Release:**
 
 ```sh
-SIGN_IDENTITY="Developer ID Application: Your Name (TEAM)" NOTARY_PROFILE=minirec ./scripts/release.sh 0.4.0
+git tag v0.5.0 && git push origin v0.5.0
 ```
 
-`NOTARY_PROFILE` is a keychain profile from `xcrun notarytool store-credentials`. With it, the release is notarized and stapled, so macOS opens it without a warning. Builds with a signing identity use the hardened runtime.
+GitHub Actions builds the app with the version from the tag, signs it with Developer ID and the hardened runtime, notarizes and staples it, and publishes `MiniRec.zip` as a release. The repository secrets `DEVELOPER_ID_P12_BASE64`, `DEVELOPER_ID_P12_PASSWORD`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_P8` (an App Store Connect API key) give it the certificate and the notarization key. Without them, the release is signed ad hoc and installed copies do not update to it. Run the workflow by hand to build and notarize without a release.
 
 The updater reads the latest release, takes the version from the `vX.Y.Z` tag, downloads the asset `MiniRec.zip`, and installs it only if an Apple certificate of the same team signed it (Apple Development or Developer ID).
 
