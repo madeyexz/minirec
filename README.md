@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/madeyexz/minirec/releases/latest/download/MiniRec.zip"><b>⬇︎ Download for Mac</b></a>
+  <a href="https://github.com/madeyexz/minirec/releases/latest/download/MiniRec.dmg"><b>⬇︎ Download for Mac</b></a>
   &nbsp;·&nbsp; macOS 15 or later &nbsp;·&nbsp; Apple Silicon &nbsp;·&nbsp; Free & open source
 </p>
 
@@ -48,7 +48,7 @@ The toolbar under the area sets **MP4 or image frames**, **clipboard or folder**
 
 ## Install
 
-1. **Download** [`MiniRec.zip`](https://github.com/madeyexz/minirec/releases/latest/download/MiniRec.zip), unzip it, and drag **MiniRec** into **Applications**.
+1. **Download** [`MiniRec.dmg`](https://github.com/madeyexz/minirec/releases/latest/download/MiniRec.dmg), open it, and drag **MiniRec** to **Applications**.
 2. **Open it**, then press <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>7</kbd>. Allow **Screen & System Audio Recording** when macOS asks, then open MiniRec again.
 
 If you choose a microphone, macOS also asks for Microphone permission.
@@ -81,7 +81,8 @@ Sources/MiniRec/FrameExporter.swift     MP4 → JPEG frames, skips frames that d
 Sources/MiniRec/Settings.swift          settings in UserDefaults, Settings window
 Sources/MiniRec/Shortcut.swift          global hot key, macOS ⇧⌘5 on/off
 Sources/MiniRec/Updater.swift           GitHub Releases updater with a signature check
-scripts/build-app.sh                    builds, signs, and notarizes MiniRec.app and MiniRec.zip
+scripts/build-app.sh                    builds, signs, and notarizes MiniRec.app and MiniRec.zip (for updates)
+scripts/make-dmg.sh                     builds, signs, and notarizes MiniRec.dmg (for downloads)
 .github/workflows/release.yml           publishes a release when a vX.Y.Z tag is pushed
 ```
 
@@ -94,7 +95,7 @@ cp -R build/MiniRec.app /Applications/ && open /Applications/MiniRec.app
 
 Without `SIGN_IDENTITY`, the build is signed ad hoc: macOS asks for permission again after each build, and auto update is off.
 
-**Release:** `git tag vX.Y.Z && git push origin vX.Y.Z`. GitHub Actions builds the app with that version, signs it with Developer ID, notarizes it, and publishes `MiniRec.zip`. It needs the repository secrets `DEVELOPER_ID_P12_BASE64`, `DEVELOPER_ID_P12_PASSWORD`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_P8`. Installed copies update only to builds that the same Apple developer team signed.
+**Release:** `git tag vX.Y.Z && git push origin vX.Y.Z`. GitHub Actions builds the app with that version, signs it with Developer ID, notarizes it, and publishes `MiniRec.dmg` and `MiniRec.zip`. It needs the repository secrets `DEVELOPER_ID_P12_BASE64`, `DEVELOPER_ID_P12_PASSWORD`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_P8`. Installed copies update only to builds that the same Apple developer team signed.
 
 ## License
 

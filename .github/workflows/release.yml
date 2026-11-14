@@ -54,11 +54,17 @@ jobs:
           ./scripts/build-app.sh
           codesign -dv build/MiniRec.app 2>&1 | grep -E '^(Authority|TeamIdentifier)=' || true
           if [ -n "${SIGN_IDENTITY:-}" ]; then spctl -a -vv -t exec build/MiniRec.app; fi
+      - name: Build DMG
+        run: |
+          ./scripts/make-dmg.sh
+          if [ -n "${SIGN_IDENTITY:-}" ]; then spctl -a -vv -t open --context context:primary-signature build/MiniRec.dmg; fi
       - uses: actions/upload-artifact@v4
         with:
           name: MiniRec
-          path: build/MiniRec.zip
+          path: |
+            build/MiniRec.zip
+            build/MiniRec.dmg
       - if: github.ref_type == 'tag'
-        run: gh release create "$GITHUB_REF_NAME" build/MiniRec.zip --title "MiniRec ${GITHUB_REF_NAME#v}" --generate-notes
+        run: gh release create "$GITHUB_REF_NAME" build/MiniRec.dmg build/MiniRec.zip --title "MiniRec ${GITHUB_REF_NAME#v}" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
