@@ -1,7 +1,8 @@
 import AppKit
 
 /// A dimmed overlay on every screen. Drag an area, then press Return or click Record.
-/// Esc cancels.
+/// Esc cancels. The toolbar under the area shows and changes the saved settings, so they stay
+/// for the next recording.
 final class SelectionOverlay {
     struct Selection {
         let screen: NSScreen
@@ -23,7 +24,8 @@ final class SelectionOverlay {
             let window = OverlayPanel(contentRect: screen.frame, styleMask: [.borderless, .nonactivatingPanel],
                                       backing: .buffered, defer: false)
             window.setFrame(screen.frame, display: false)
-            window.level = .screenSaver
+            // Below pop-up menus, so the microphone menu shows above the overlay.
+            window.level = NSWindow.Level(rawValue: NSWindow.Level.popUpMenu.rawValue - 1)
             window.isOpaque = false
             window.backgroundColor = .clear
             window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
@@ -63,10 +65,15 @@ private final class SelectionView: NSView {
     var selection: CGRect? {
         didSet {
             needsDisplay = true
-            placeButton()
+            placeToolbar()
         }
     }
     private var anchor: CGPoint?
+    private let toolbar = NSVisualEffectView()
+    private let formatControl = NSSegmentedControl(labels: ["MP4", "Frames"], trackingMode: .selectOne, target: nil, action: nil)
+    private let destinationControl = NSSegmentedControl(labels: ["Clipboard", "Folder"], trackingMode: .selectOne, target: nil, action: nil)
+    private let soundButton = NSButton()
+    private let micButton = NSPopUpButton(frame: .zero, pullsDown: false)
     private let recordButton = NSButton(title: "Record", target: nil, action: nil)
 
     init(overlay: SelectionOverlay, screen: NSScreen, scale: CGFloat) {
@@ -74,12 +81,69 @@ private final class SelectionView: NSView {
         self.screen = screen
         self.scale = scale
         super.init(frame: .zero)
+        let settings = Settings.load()
+
+        formatControl.selectedSegment = settings.format == .frames ? 1 : 0
+        formatControl.toolTip = "Export an MP4 video or image frames"
+        formatControl.target = self
+        formatControl.action = #selector(setFormat)
+
+        destinationControl.selectedSegment = settings.destination == .folder ? 1 : 0
+        let folder = (UserDefaults.standard.string(forKey: "folderPath").flatMap { $0.isEmpty ? nil : $0 }
+            ?? Settings.defaultFolder.path).replacingOccurrences(of: NSHomeDirectory(), with: "~")
+        destinationControl.toolTip = "Copy to the clipboard, or save in \(folder)"
+        destinationControl.target = self
+        destinationControl.action = #selector(setDestination)
+
+        soundButton.title = "Sound"
+        soundButton.imagePosition = .imageLeading
+        soundButton.bezelStyle = .push
+        soundButton.setButtonType(.pushOnPushOff)
+        soundButton.state = settings.systemAudio ? .on : .off
+        soundButton.toolTip = "Record system sound"
+        soundButton.target = self
+        soundButton.action = #selector(setSound)
+        showSoundState()
+
+        micButton.addItem(withTitle: "No Mic")
+        micButton.lastItem?.image = NSImage(systemSymbolName: "mic.slash", accessibilityDescription: nil)
+        micButton.lastItem?.representedObject = ""
+        for mic in Settings.microphones() {
+            micButton.addItem(withTitle: mic.localizedName)
+            micButton.lastItem?.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: nil)
+            micButton.lastItem?.representedObject = mic.uniqueID
+        }
+        micButton.selectItem(at: max(micButton.indexOfItem(withRepresentedObject: settings.microphoneID), 0))
+        micButton.toolTip = "Microphone"
+        micButton.target = self
+        micButton.action = #selector(setMicrophone)
+        micButton.widthAnchor.constraint(lessThanOrEqualToConstant: 180).isActive = true
+
         recordButton.bezelStyle = .push
         recordButton.keyEquivalent = "\r"
         recordButton.target = self
         recordButton.action = #selector(record)
-        recordButton.isHidden = true
-        addSubview(recordButton)
+
+        let stack = NSStackView(views: [formatControl, destinationControl, soundButton, micButton, recordButton])
+        stack.spacing = 10
+        stack.edgeInsets = NSEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        toolbar.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: toolbar.leadingAnchor),
+            stack.trailingAnchor.constraint(equalTo: toolbar.trailingAnchor),
+            stack.topAnchor.constraint(equalTo: toolbar.topAnchor),
+            stack.bottomAnchor.constraint(equalTo: toolbar.bottomAnchor),
+        ])
+        toolbar.material = .hudWindow
+        toolbar.state = .active
+        toolbar.appearance = NSAppearance(named: .darkAqua)
+        toolbar.wantsLayer = true
+        toolbar.layer?.cornerRadius = 10
+        toolbar.layer?.masksToBounds = true
+        toolbar.frame.size = toolbar.fittingSize
+        toolbar.isHidden = true
+        addSubview(toolbar)
     }
 
     required init?(coder: NSCoder) { fatalError() }
@@ -121,15 +185,39 @@ private final class SelectionView: NSView {
         overlay.finish(.init(screen: screen, rect: selection))
     }
 
-    private func placeButton() {
-        recordButton.isHidden = selection == nil
+    private func placeToolbar() {
+        toolbar.isHidden = selection == nil
         guard let s = selection else { return }
-        recordButton.sizeToFit()
-        let size = recordButton.frame.size
+        let size = toolbar.frame.size
         // Below the area when there is room, else inside its bottom edge.
         var y = s.maxY + 8
         if y + size.height > bounds.maxY { y = s.maxY - size.height - 8 }
-        recordButton.frame.origin = CGPoint(x: min(max(s.midX - size.width / 2, 0), bounds.maxX - size.width), y: y)
+        toolbar.frame.origin = CGPoint(x: min(max(s.midX - size.width / 2, 0), bounds.maxX - size.width), y: y)
+    }
+
+    // Each control writes the saved setting at once, so the next selection starts with it.
+
+    @objc private func setFormat() {
+        UserDefaults.standard.set((formatControl.selectedSegment == 1 ? Settings.Format.frames : .mp4).rawValue, forKey: "format")
+    }
+
+    @objc private func setDestination() {
+        UserDefaults.standard.set((destinationControl.selectedSegment == 1 ? Settings.Destination.folder : .clipboard).rawValue,
+                                  forKey: "destination")
+    }
+
+    @objc private func setSound() {
+        UserDefaults.standard.set(soundButton.state == .on, forKey: "systemAudio")
+        showSoundState()
+    }
+
+    @objc private func setMicrophone() {
+        UserDefaults.standard.set(micButton.selectedItem?.representedObject as? String ?? "", forKey: "microphoneID")
+    }
+
+    private func showSoundState() {
+        let on = soundButton.state == .on
+        soundButton.image = NSImage(systemSymbolName: on ? "speaker.wave.2.fill" : "speaker.slash", accessibilityDescription: nil)
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -163,3 +251,4 @@ private final class SelectionView: NSView {
         str.draw(at: CGPoint(x: box.minX + 6, y: box.minY + 3))
     }
 }
+

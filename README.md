@@ -60,6 +60,7 @@ If you choose a microphone in Settings, macOS also asks for Microphone permissio
 |---|---|
 | <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>7</kbd> | Start: the screen dims so you can select an area |
 | Drag | Select the area to record (on any display) |
+| Toolbar under the area | See and change MP4 or frames, clipboard or folder, system sound, and microphone. MiniRec keeps your choice for the next recording |
 | <kbd>Return</kbd> or **Record** | Start recording |
 | <kbd>Esc</kbd> | Cancel the selection |
 | <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>7</kbd> again, or click the red menu bar icon | Stop. The file goes to the clipboard (or your folder) and you hear a "pop" |

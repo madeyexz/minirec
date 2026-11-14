@@ -68,6 +68,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         overlay = SelectionOverlay(pixelScale: { retina ? $0.backingScaleFactor : 1 }) { [weak self] selection in
             guard let self else { return }
             overlay = nil
+            settings = Settings.load() // the overlay toolbar may have changed them
             if let selection { start(selection) } else { showIdle() }
         }
         overlay?.show()
