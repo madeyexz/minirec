@@ -228,7 +228,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openSettings() {
         if settingsWindow == nil {
-            let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView()))
+            let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView { [weak self] in self?.checkForUpdates() }))
             window.title = "MiniRec Settings"
             window.styleMask = [.titled, .closable]
             window.isReleasedWhenClosed = false

@@ -63,6 +63,8 @@ struct Settings {
 }
 
 struct SettingsView: View {
+    /// Settings must offer this too, because the menu bar icon can be hidden.
+    let checkForUpdates: () -> Void
     @AppStorage("format") private var format = Settings.Format.mp4.rawValue
     @AppStorage("destination") private var destination = Settings.Destination.clipboard.rawValue
     @AppStorage("folderPath") private var folderPath = ""
@@ -133,6 +135,14 @@ struct SettingsView: View {
             Picker("Microphone", selection: $microphoneID) {
                 Text("None").tag("")
                 ForEach(microphones, id: \.uniqueID) { Text($0.localizedName).tag($0.uniqueID) }
+            }
+            Section {
+                LabeledContent {
+                    Button("Check for Updates", action: checkForUpdates)
+                } label: {
+                    Text("MiniRec \(Updater.currentVersion)")
+                    Text("Updates install by themselves when MiniRec is not recording.")
+                }
             }
         }
         .formStyle(.grouped)

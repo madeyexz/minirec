@@ -63,6 +63,8 @@ Click the menu bar icon → **Settings…**, or open MiniRec again while it runs
 
 **Resolution** is 1× by default for small files. Choose **Retina** for full detail. Recordings are kept in `~/Movies/MiniRec`, unless you choose a folder.
 
+The bottom of Settings shows your version and a **Check for Updates** button, which works even when the menu bar icon is hidden.
+
 ## FAQ
 
 **Can my agent read an MP4?** Agents that read video can take the MP4 as it is. If yours reads only images, select **Frames** in the toolbar, and MiniRec copies JPEG frames instead.
