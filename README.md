@@ -52,3 +52,7 @@ SIGN_IDENTITY="Apple Development: Your Name (ID)" ./scripts/release.sh 0.2.0
 
 This sets the version, builds, commits, tags, pushes, and creates a GitHub release with
 `MiniRec.zip`. Use the same certificate for every release.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
