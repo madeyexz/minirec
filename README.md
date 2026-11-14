@@ -75,9 +75,9 @@ Recordings are saved in `~/Movies/MiniRec` unless you choose a folder.
 Click the menu bar icon → **Settings…** (or open MiniRec again while it runs).
 
 <p align="center">
-  <img src="docs/screenshot-settings.png" width="420" alt="MiniRec Settings: Record with ⇧⌘5, Export, Save to, Resolution, Frame rate, Launch at login, Hide menu bar icon, Show cursor, Record system sound, Microphone">
+  <img src="docs/screenshot-settings.png" width="420" align="top" alt="MiniRec Settings: Record with ⇧⌘5, Export, Save to, Resolution, Frame rate, Launch at login, Hide menu bar icon, Show cursor, Record system sound, Microphone">
   &nbsp;
-  <img src="docs/screenshot-menu.png" width="360" alt="The menu bar menu: Record Area ⇧⌘7, Open Recordings Folder, Settings…, Check for Updates…, Quit MiniRec">
+  <img src="docs/screenshot-menu.png" width="360" align="top" alt="The menu bar menu: Record Area ⇧⌘7, Open Recordings Folder, Settings…, Check for Updates…, Quit MiniRec">
 </p>
 
 - **Record with ⇧⌘5** — turns off the macOS screenshot toolbar shortcut and uses ⇧⌘5 instead of ⇧⌘7. Turn it off and macOS gets ⇧⌘5 back.
