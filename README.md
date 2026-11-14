@@ -1,58 +1,159 @@
-# MiniRec
+<p align="center">
+  <img src="docs/icon.png" width="128" alt="MiniRec icon">
+</p>
 
-A minimal macOS menu-bar screen recorder for giving context to agents.
+<h1 align="center">MiniRec</h1>
 
-Press **⇧⌘7**, drag an area, press **Return** (or click Record). Press the shortcut again,
-or click the red menu-bar icon, to stop. The file is copied to the clipboard, so you can
-paste it into an agent, Slack, or Finder. Files are saved in `~/Movies/MiniRec`.
+<p align="center">
+  <b>Show your agent the bug instead of describing it.</b><br>
+  Press a shortcut, drag an area, record. The clip is on your clipboard, small enough to paste into any chat or agent.
+</p>
 
-Settings (menu-bar icon › Settings…, or open MiniRec again while it runs):
+<p align="center">
+  <a href="https://github.com/madeyexz/minirec/releases/latest/download/MiniRec.zip"><b>⬇︎ Download for Mac</b></a>
+  &nbsp;·&nbsp; macOS 15 or later &nbsp;·&nbsp; Apple Silicon &nbsp;·&nbsp; Free & open source
+</p>
 
-- **Record with ⇧⌘5**: turns off the macOS screenshot toolbar shortcut and uses ⇧⌘5
-  instead of ⇧⌘7. Turn it off to give ⇧⌘5 back to macOS.
-- **Export**: MP4 video, or image frames (JPEG, one every 0.5/1/2 s; frames that did not
-  change are skipped). With frames, all the frame files are copied to the clipboard.
-- **Save to**: Clipboard (saved in `~/Movies/MiniRec` and copied), or Folder (saved in a
-  folder you choose; the clipboard is not changed).
-- **Launch at login** and **Hide menu bar icon**. With the icon hidden, the shortcut still
-  records and stops, and opening MiniRec again shows Settings.
-- **Resolution**: Standard (1×, smaller) or Retina.
-- **Frame rate**: 15, 30, or 60 fps.
-- **Show cursor**, **Record system sound**, and **Microphone** (None or a device). When
-  both sound sources are on, they are mixed into one audio track.
+<p align="center">
+  <img src="docs/demo.gif" width="800" alt="⇧⌘7 dims the screen, a drag selects the checkout form, Return starts recording with a red frame, typing a card number and clicking Pay shows an error, and ⇧⌘7 stops the recording">
+</p>
 
-MP4 is H.264 with a bitrate that scales with the area (at most 12 Mbit/s). A full-screen
-scroll at 1× is about 7 MB per minute; a static screen is much less.
+<p align="center">
+  <a href="docs/demo.mp4"><b>▶ Watch the 15-second demo</b></a>
+</p>
 
-## Updates
+---
 
-MiniRec checks [GitHub Releases](https://github.com/madeyexz/minirec/releases) at launch
-and once a day, and installs a new version when it is not recording. It installs only a
-build signed with the same certificate as the installed copy. Menu-bar icon › Check for
-Updates… checks now.
+## Why
 
-## Build
+Telling an agent "the error shows up after I click Pay" takes a paragraph and still misses things. A 10-second clip shows it. But most screen recorders are made for polished videos: they open an editor, export large files, and save to a library you must dig through.
 
-Needs macOS 15 or later and Xcode command line tools.
+MiniRec does one thing. **⇧⌘7, drag, Return, ⇧⌘7** — and the file is on your clipboard. A 15-second clip of a full screen is about 2 MB. If your agent cannot read video, MiniRec can export image frames instead.
+
+## What you get
+
+| | |
+|---|---|
+| <img src="docs/screenshot-select.png" alt="Selecting the checkout form, with its size shown above it and a Record button below"> | <img src="docs/screenshot-recording.png" alt="Recording: a red frame around the area and the elapsed time in the menu bar"> |
+| **Drag any area.** The rest of the screen dims, and the size in pixels shows above the area. Press <kbd>Return</kbd> or click **Record**. | **A red frame shows what is recorded.** The frame and MiniRec's own windows are not in the video. The menu bar shows the time. |
+
+- **Small files** — hardware H.264 at a bitrate that fits the area. A full-screen scroll at 1× is about 7 MB per minute; a still screen is a few KB.
+- **Clipboard or folder** — paste the file into Claude, Cursor, Slack or Finder, or save it into a folder you choose.
+- **Image frames for agents that cannot read video** — one JPEG every 0.5, 1 or 2 seconds. Frames that did not change are skipped, so you get only the moments that matter.
+- **System sound and microphone** — record either, both, or neither. Both are mixed into one audio track.
+- **Use ⇧⌘5 if you like** — one switch gives MiniRec the macOS screenshot shortcut; turn it off to give it back.
+- **Stays out of the way** — no Dock icon, no editor, no library. Launch at login, and hide the menu bar icon if you want.
+- **Updates itself** from GitHub Releases.
+
+## Install
+
+1. **Download** [`MiniRec.zip`](https://github.com/madeyexz/minirec/releases/latest/download/MiniRec.zip) and double-click it to unzip.
+2. **Drag `MiniRec`** into your **Applications** folder. It must be there to update itself.
+3. **Open it.** MiniRec is not from the App Store, so macOS warns you the first time:
+   - Click **Done** on the warning.
+   - Open **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to MiniRec.
+   - Confirm with **Open**. You do this only once.
+4. **Record once.** Press <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>7</kbd>. macOS asks for **Screen & System Audio Recording** permission. Allow it, then open MiniRec again.
+
+If you choose a microphone in Settings, macOS also asks for Microphone permission.
+
+## How to use it
+
+| Do this | To |
+|---|---|
+| <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>7</kbd> | Start: the screen dims so you can select an area |
+| Drag | Select the area to record (on any display) |
+| <kbd>Return</kbd> or **Record** | Start recording |
+| <kbd>Esc</kbd> | Cancel the selection |
+| <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>7</kbd> again, or click the red menu bar icon | Stop. The file goes to the clipboard (or your folder) and you hear a "pop" |
+| <kbd>⌘</kbd> <kbd>V</kbd> | Paste the clip into your agent, chat, or Finder |
+
+Recordings are saved in `~/Movies/MiniRec` unless you choose a folder.
+
+### Settings
+
+Click the menu bar icon → **Settings…** (or open MiniRec again while it runs).
+
+<p align="center">
+  <img src="docs/screenshot-settings.png" width="420" alt="MiniRec Settings: Record with ⇧⌘5, Export, Save to, Resolution, Frame rate, Launch at login, Hide menu bar icon, Show cursor, Record system sound, Microphone">
+  &nbsp;
+  <img src="docs/screenshot-menu.png" width="360" alt="The menu bar menu: Record Area ⇧⌘7, Open Recordings Folder, Settings…, Check for Updates…, Quit MiniRec">
+</p>
+
+- **Record with ⇧⌘5** — turns off the macOS screenshot toolbar shortcut and uses ⇧⌘5 instead of ⇧⌘7. Turn it off and macOS gets ⇧⌘5 back.
+- **Export** — **MP4 video**, or **Image frames** (JPEG, one every 0.5 / 1 / 2 s, unchanged frames skipped). With frames, all frame files go to the clipboard.
+- **Save to** — **Clipboard** (saved in `~/Movies/MiniRec` and copied), or **Folder** (saved in the folder you choose; the clipboard does not change).
+- **Resolution** — **Standard (1×)** for small files, or **Retina** for full detail.
+- **Frame rate** — 15, 30 or 60 fps.
+- **Launch at login** — also shows in System Settings → General → Login Items.
+- **Hide menu bar icon** — the shortcut still records and stops. Open MiniRec again (Spotlight or Applications) to show Settings.
+- **Show cursor**, **Record system sound**, **Microphone**.
+
+## How it works
+
+```mermaid
+flowchart LR
+  K["⇧⌘7 or ⇧⌘5"] --> O["Dimmed overlay<br/>drag an area"]
+  O -->|Return| S["ScreenCaptureKit<br/>area + system sound + mic"]
+  S --> W["AVAssetWriter<br/>hardware H.264 · AAC"]
+  W -->|stop| F["MP4 in ~/Movies/MiniRec<br/>or your folder"]
+  F -.->|Export: Image frames| J["JPEG frames<br/>unchanged ones skipped"]
+  F --> C["Clipboard"]
+  J --> C
+  U["GitHub Releases<br/>at launch + daily"] -.->|"same signature only"| A["MiniRec.app"]
+```
+
+MiniRec is about 1,000 lines of Swift with no dependencies. It writes the video while it records, so there is no export step after you stop.
+
+## Privacy
+
+Everything stays on your Mac. No account, no analytics, no uploads. The only network request MiniRec makes is to ask GitHub for its latest release (at launch and once a day).
+
+## FAQ
+
+**Can Claude Code, Cursor or Codex read the MP4?** Most coding agents read images, not video. Set **Export → Image frames**, and MiniRec copies a few JPEG frames that any agent can read. Agents that read video (such as Amp or Gemini) can take the MP4.
+
+**Why ⇧⌘7 and not ⇧⌘5?** macOS uses ⇧⌘5 for its own screenshot toolbar. Turn on **Record with ⇧⌘5** in Settings and MiniRec takes it over.
+
+**macOS asks for Screen Recording permission again.** This happens when the app's signature changes, for example when you build it yourself without a signing certificate. Allow it once more.
+
+**How do I update?** MiniRec updates itself when it is not recording. To check now, click the menu bar icon → **Check for Updates…**. It installs only a build signed with the same certificate as your copy.
+
+**How do I remove it?** Quit MiniRec from its menu, then move `/Applications/MiniRec.app` to the Trash. If you turned on **Record with ⇧⌘5**, turn it off first so macOS gets the shortcut back.
+
+---
+
+## For developers
+
+```
+Sources/MiniRec/main.swift              app delegate: menu bar item, flow (select → record → save), alerts
+Sources/MiniRec/SelectionOverlay.swift  dimmed overlay on every display, drag to select
+Sources/MiniRec/Recorder.swift          ScreenCaptureKit → AVAssetWriter, mixes system sound and mic
+Sources/MiniRec/FrameExporter.swift     MP4 → JPEG frames, skips frames that did not change
+Sources/MiniRec/Settings.swift          settings stored in UserDefaults, SwiftUI Settings window
+Sources/MiniRec/Shortcut.swift          global hot key, macOS ⇧⌘5 on/off
+Sources/MiniRec/Updater.swift           GitHub Releases updater with a signature check
+scripts/build-app.sh                    builds and signs build/MiniRec.app
+scripts/release.sh                      sets the version, builds, tags, and publishes a release
+```
+
+**Build** (needs Xcode Command Line Tools):
 
 ```sh
 SIGN_IDENTITY="Apple Development: Your Name (ID)" ./scripts/build-app.sh
 cp -R build/MiniRec.app /Applications/ && open /Applications/MiniRec.app
 ```
 
-On the first recording, macOS asks for Screen Recording permission (and Microphone
-permission if you chose one). Without `SIGN_IDENTITY` the build is signed ad hoc: macOS
-asks again after each rebuild, and auto update is off.
+Without `SIGN_IDENTITY` the build is signed ad hoc: macOS asks for permission again after each build, and auto update is off.
 
-## Release
+**Release:**
 
 ```sh
-SIGN_IDENTITY="Apple Development: Your Name (ID)" ./scripts/release.sh 0.2.0
+SIGN_IDENTITY="Apple Development: Your Name (ID)" ./scripts/release.sh 0.4.0
 ```
 
-This sets the version, builds, commits, tags, pushes, and creates a GitHub release with
-`MiniRec.zip`. Use the same certificate for every release.
+The updater reads the latest release, takes the version from the `vX.Y.Z` tag, downloads the asset `MiniRec.zip`, and installs it only if it meets the running app's designated requirement. Sign every release with the same certificate.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[MIT](LICENSE) © 2026 Ian Hsiao.
